@@ -4,14 +4,18 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <title>Command Center Dashboard</title>
+
   <style>
     :root{
-      --bg: #fff6f8;
+      /* Palette: pink / white / grey only */
+      --bg: #fff7f9;
       --card: #ffffff;
       --pink: #f3a7b6;
-      --pink-2:#ffd3dc;
-      --text:#2b2b2b;
-      --muted:#6b6b6b;
+      --pink-2:#ffd6de;
+      --pink-3:#ffe9ee;
+      --grey-1:#2f2f2f;
+      --grey-2:#6f6f6f;
+      --grey-3:#b9b9b9;
       --border:#f2c6cf;
       --shadow: 0 10px 25px rgba(0,0,0,0.06);
       --radius: 16px;
@@ -21,18 +25,19 @@
 
     body{
       margin:0;
-      background: radial-gradient(1200px 600px at 10% 10%, var(--pink-2), transparent 55%),
-                  radial-gradient(900px 500px at 90% 0%, #ffeaf0, transparent 50%),
-                  var(--bg);
-      color: var(--text);
+      background:
+        radial-gradient(1200px 600px at 10% 10%, var(--pink-2), transparent 55%),
+        radial-gradient(900px 500px at 90% 0%, var(--pink-3), transparent 50%),
+        var(--bg);
+      color: var(--grey-1);
     }
 
-    /* Menu bar (same on all pages) */
+    /* Menu bar (consistent) */
     .nav{
       position: sticky;
       top: 0;
       z-index: 10;
-      background: rgba(255, 246, 248, 0.9);
+      background: rgba(255, 247, 249, 0.92);
       backdrop-filter: blur(8px);
       border-bottom: 1px solid var(--border);
     }
@@ -66,7 +71,7 @@
     }
     .menu a{
       text-decoration:none;
-      color: var(--text);
+      color: var(--grey-1);
       padding: 8px 12px;
       border-radius: 999px;
       border: 1px solid transparent;
@@ -101,9 +106,9 @@
     }
     .subtitle{
       margin: 6px 0 0;
-      color: var(--muted);
+      color: var(--grey-2);
       font-size: 14px;
-      max-width: 640px;
+      max-width: 680px;
     }
 
     .grid{
@@ -126,7 +131,7 @@
     label{
       display:block;
       font-size: 13px;
-      color: var(--muted);
+      color: var(--grey-2);
       margin: 10px 0 6px;
     }
     input{
@@ -137,10 +142,11 @@
       outline: none;
       font-size: 14px;
       background: #fff;
+      color: var(--grey-1);
     }
     input:focus{
       border-color: var(--pink);
-      box-shadow: 0 0 0 4px rgba(243,167,182,0.25);
+      box-shadow: 0 0 0 4px rgba(243,167,182,0.22);
     }
 
     .row{
@@ -161,11 +167,16 @@
       cursor:pointer;
     }
     button.secondary{
-      background: white;
-      color: var(--text);
+      background: #fff;
+      color: var(--grey-1);
       border-color: var(--border);
     }
-    button:hover{ filter: brightness(0.98); }
+    button.ghost{
+      background: #fff;
+      color: var(--grey-1);
+      border-color: var(--border);
+    }
+    button:hover{ filter: brightness(0.985); }
 
     .inventory-head{
       display:flex;
@@ -177,11 +188,28 @@
     }
     .pill{
       font-size: 12px;
-      color: var(--muted);
+      color: var(--grey-2);
       border: 1px solid var(--border);
       padding: 6px 10px;
       border-radius: 999px;
       background: #fff;
+    }
+
+    .hint{
+      margin-top:12px;
+      color: var(--grey-2);
+      font-size: 13px;
+    }
+
+    .error{
+      margin-top: 10px;
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      background: var(--pink-3);
+      color: var(--grey-1);
+      border-radius: 12px;
+      font-size: 13px;
+      display:none;
     }
 
     table{
@@ -196,11 +224,12 @@
       text-align:left;
       font-size: 14px;
       border-bottom: 1px solid #f6d9e0;
+      color: var(--grey-1);
     }
     th{
       background: #fff0f4;
       font-size: 13px;
-      color: #4a4a4a;
+      color: var(--grey-2);
     }
     tr:last-child td{ border-bottom: none; }
     .qty{
@@ -217,14 +246,9 @@
       border-radius: 10px;
       font-size: 12px;
     }
-    .danger{
-      border-color: #ff6b6b !important;
-      background: #ff6b6b !important;
-      color:white !important;
-    }
 
     .empty{
-      color: var(--muted);
+      color: var(--grey-2);
       font-size: 14px;
       padding: 14px 2px 2px;
     }
@@ -233,11 +257,12 @@
       max-width: var(--max);
       margin: 0 auto;
       padding: 0 16px 30px;
-      color: var(--muted);
+      color: var(--grey-2);
       font-size: 12px;
     }
   </style>
 </head>
+
 <body>
 
   <nav class="nav">
@@ -255,7 +280,8 @@
       <div>
         <h1>Warehouse Inventory Dashboard</h1>
         <p class="subtitle">
-          Add items, update quantities instantly, and refresh safely — inventory persists via localStorage.
+          Add items, view the list instantly, and refresh safely — inventory persists using localStorage.
+          The pie chart highlights low stock automatically.
         </p>
       </div>
       <div class="pill" id="lastSaved">Last saved: —</div>
@@ -265,8 +291,8 @@
       <!-- Input Form -->
       <div class="card">
         <h2 style="margin:0 0 6px;">Add / Update Item</h2>
-        <p style="margin:0 0 10px; color:var(--muted); font-size:14px;">
-          Enter an item name and quantity. If the item already exists, it will update.
+        <p class="subtitle" style="margin:0 0 10px;">
+          Items can’t be duplicated. Quantity must be a whole number (0 or more).
         </p>
 
         <form id="inventoryForm" autocomplete="off">
@@ -274,17 +300,19 @@
           <input id="itemName" type="text" placeholder="e.g., Bubble Wrap" required />
 
           <label for="quantity">Quantity</label>
-          <input id="quantity" type="number" min="0" step="1" placeholder="e.g., 120" required />
+          <input id="quantity" type="number" min="0" step="1" inputmode="numeric" placeholder="e.g., 120" required />
 
           <div class="row">
             <button type="submit">Save Item</button>
-            <button type="button" class="secondary" id="clearForm">Clear</button>
-            <button type="button" class="secondary danger" id="resetAll">Reset Inventory</button>
+            <button type="button" class="secondary" id="clearForm">Clear Form</button>
+            <button type="button" class="secondary" id="clearAllItems">Clear All Items</button>
           </div>
+
+          <div class="error" id="formError"></div>
         </form>
 
-        <div class="empty" style="margin-top:12px;">
-          Tip: Use consistent naming (e.g., “Box - Small” vs “Small Box”) to keep reporting clean.
+        <div class="hint">
+          Tip: Names are treated as the same item even if casing differs (e.g., “Boxes” and “boxes”).
         </div>
       </div>
 
@@ -297,29 +325,80 @@
 
         <div id="inventoryContainer"></div>
       </div>
+
+      <!-- Visualization (Chart.js Pie) -->
+      <div class="card" style="grid-column: 1 / -1;">
+        <div class="inventory-head">
+          <h2 style="margin:0;">Inventory Visualization</h2>
+          <div class="pill" id="chartMeta">Chart: Pie</div>
+        </div>
+
+        <div style="background:#fff; border:1px solid var(--border); border-radius:14px; padding:12px;">
+          <canvas id="inventoryChart" height="140"></canvas>
+        </div>
+
+        <p class="subtitle" style="margin-top:10px;">
+          Low stock rule: if an item’s quantity is <strong>10</strong>, its slice turns <strong>pink-red</strong> to signal attention.
+        </p>
+      </div>
     </section>
   </main>
 
   <footer>
-    Built with a blush-pink theme • Data stored locally in your browser (localStorage)
+    Blush theme • Persistent browser storage (localStorage) • Real-time list + chart updates
   </footer>
 
-  <script>
-    const STORAGE_KEY = "warehouseInventory_v1";
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
+  <script>
+    // ===== localStorage key =====
+    const STORAGE_KEY = "warehouseInventory_v2";
+
+    // Elements
     const form = document.getElementById("inventoryForm");
     const itemNameEl = document.getElementById("itemName");
     const quantityEl = document.getElementById("quantity");
     const inventoryContainer = document.getElementById("inventoryContainer");
     const itemCountEl = document.getElementById("itemCount");
     const lastSavedEl = document.getElementById("lastSaved");
+    const formErrorEl = document.getElementById("formError");
 
     const clearFormBtn = document.getElementById("clearForm");
-    const resetAllBtn = document.getElementById("resetAll");
+    const clearAllItemsBtn = document.getElementById("clearAllItems");
 
+    // Chart
+    const chartCanvas = document.getElementById("inventoryChart");
+    const chartMetaEl = document.getElementById("chartMeta");
+    let inventoryChart = null;
+
+    // ===== Helpers =====
     function nowLabel(ts){
       const d = new Date(ts);
       return d.toLocaleString();
+    }
+
+    function normalizeKey(name){
+      return name.trim().toLowerCase();
+    }
+
+    function escapeHtml(str){
+      return String(str)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function showError(msg){
+      formErrorEl.textContent = msg;
+      formErrorEl.style.display = "block";
+    }
+
+    function clearError(){
+      formErrorEl.textContent = "";
+      formErrorEl.style.display = "none";
     }
 
     function loadInventory(){
@@ -338,23 +417,14 @@
       lastSavedEl.textContent = ts ? `Last saved: ${nowLabel(ts)}` : "Last saved: —";
     }
 
-    function normalizeKey(name){
-      return name.trim().toLowerCase();
-    }
-
-    function escapeHtml(str){
-      return String(str)
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#039;");
-    }
-
-    function renderInventory(){
+    function getEntriesSorted(){
       const inventory = loadInventory();
-      const entries = Object.values(inventory).sort((a,b) => a.name.localeCompare(b.name));
+      return Object.values(inventory).sort((a,b) => a.name.localeCompare(b.name));
+    }
 
+    // ===== Rendering =====
+    function renderInventory(){
+      const entries = getEntriesSorted();
       itemCountEl.textContent = `${entries.length} item${entries.length === 1 ? "" : "s"}`;
 
       if(entries.length === 0){
@@ -370,7 +440,7 @@
           <td>
             <div class="actions">
               <button class="secondary small" data-action="edit" data-key="${normalizeKey(item.name)}">Edit</button>
-              <button class="small danger" data-action="delete" data-key="${normalizeKey(item.name)}">Delete</button>
+              <button class="secondary small" data-action="delete" data-key="${normalizeKey(item.name)}">Delete</button>
             </div>
           </td>
         </tr>
@@ -400,68 +470,192 @@
       });
     }
 
+    // Pie chart colors: all pink/grey/white; low stock uses "pink-red" (still in the pink family).
+    function colorForQuantity(qty, index){
+      const lowStockColor = "#ff6b8a"; // pink-red
+      if(qty < 10) return lowStockColor;
+
+      // soft palette rotation
+      const palette = [
+        "#f3a7b6", // main blush
+        "#ffd6de", // light blush
+        "#ffe9ee", // very light pink
+        "#f2c6cf", // border pink
+        "#e9e9e9", // very light grey
+        "#d8d8d8"  // light grey
+      ];
+      return palette[index % palette.length];
+    }
+
+    function renderChart(){
+      const entries = getEntriesSorted();
+      const labels = entries.map(e => e.name);
+      const data = entries.map(e => e.quantity);
+      const colors = entries.map((e, i) => colorForQuantity(e.quantity, i));
+
+      if(labels.length === 0){
+        chartMetaEl.textContent = "Chart: Pie";
+        if(inventoryChart){
+          inventoryChart.destroy();
+          inventoryChart = null;
+        }
+        return;
+      }
+
+      chartMetaEl.textContent = "Chart: Pie";
+
+      if(inventoryChart){
+        inventoryChart.data.labels = labels;
+        inventoryChart.data.datasets[0].data = data;
+        inventoryChart.data.datasets[0].backgroundColor = colors;
+        inventoryChart.update();
+        return;
+      }
+
+      inventoryChart = new Chart(chartCanvas, {
+        type: "pie",
+        data: {
+          labels,
+          datasets: [{
+            label: "Quantity",
+            data,
+            backgroundColor: colors,
+            borderColor: "#ffffff",
+            borderWidth: 2
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: {
+              display: true,
+              labels: {
+                color: "#6f6f6f",
+                boxWidth: 14,
+                boxHeight: 14
+              }
+            },
+            tooltip: {
+              callbacks: {
+                label: (ctx) => {
+                  const label = ctx.label || "";
+                  const value = ctx.raw;
+                  const low = Number(value) < 10 ? " (LOW STOCK)" : "";
+                  return `${label}: ${value}${low}`;
+                }
+              }
+            }
+          }
+        }
+      });
+    }
+
+    // ===== Actions =====
     function handleEdit(key){
       const inventory = loadInventory();
       const item = inventory[key];
       if(!item) return;
+
       itemNameEl.value = item.name;
       quantityEl.value = item.quantity;
       itemNameEl.focus();
+      clearError();
     }
 
     function handleDelete(key){
       const inventory = loadInventory();
       if(!inventory[key]) return;
+
       delete inventory[key];
       saveInventory(inventory);
       renderInventory();
+      renderChart();
+      clearError();
     }
 
+    function clearAllItems(){
+      const ok = confirm("Clear ALL items? This will remove everything saved in this browser.");
+      if(!ok) return;
+
+      localStorage.removeItem(STORAGE_KEY);
+      localStorage.removeItem(STORAGE_KEY + "_lastSaved");
+      updateLastSaved();
+      renderInventory();
+      renderChart();
+      clearError();
+    }
+
+    // ===== Input validation rules =====
+    // - No duplicate items (case-insensitive)
+    // - Quantity must be a whole number
+    // - Quantity cannot be negative
+    // - No alphanumeric values accepted in the number field (enforced via parsing + checks)
+    function validateInputs(nameRaw, qtyRaw){
+      const name = nameRaw.trim();
+      if(!name) return { ok:false, msg:"Please enter an item name." };
+
+      // Strict numeric validation:
+      // Accept only digits (no letters, no decimals, no minus sign)
+      const qtyStr = String(qtyRaw).trim();
+      if(!/^\d+$/.test(qtyStr)){
+        return { ok:false, msg:"Quantity must be a whole number (0 or more). No letters or decimals." };
+      }
+
+      const quantity = Number(qtyStr);
+      if(!Number.isFinite(quantity)) return { ok:false, msg:"Quantity must be a valid number." };
+      if(quantity < 0) return { ok:false, msg:"Quantity cannot be negative." };
+
+      return { ok:true, name, quantity };
+    }
+
+    // ===== Events =====
     form.addEventListener("submit", (e) => {
       e.preventDefault();
 
-      const name = itemNameEl.value.trim();
-      const quantity = Number(quantityEl.value);
+      const nameRaw = itemNameEl.value;
+      const qtyRaw = quantityEl.value;
 
-      if(!name){
-        alert("Please enter an item name.");
-        return;
-      }
-      if(!Number.isFinite(quantity) || quantity < 0){
-        alert("Please enter a valid quantity (0 or more).");
+      const v = validateInputs(nameRaw, qtyRaw);
+      if(!v.ok){
+        showError(v.msg);
         return;
       }
 
-      const key = normalizeKey(name);
+      const key = normalizeKey(v.name);
       const inventory = loadInventory();
 
-      inventory[key] = { name, quantity: Math.floor(quantity), updatedAt: Date.now() };
+      // Prevent duplicates:
+      // If item exists with same normalized key, we update quantity (not create a duplicate).
+      // This satisfies "items can’t be duplicated".
+      inventory[key] = {
+        name: v.name,
+        quantity: v.quantity,
+        updatedAt: Date.now()
+      };
 
       saveInventory(inventory);
       renderInventory();
+      renderChart();
 
       itemNameEl.value = "";
       quantityEl.value = "";
       itemNameEl.focus();
+      clearError();
     });
 
     clearFormBtn.addEventListener("click", () => {
       itemNameEl.value = "";
       quantityEl.value = "";
       itemNameEl.focus();
+      clearError();
     });
 
-    resetAllBtn.addEventListener("click", () => {
-      const ok = confirm("Reset ALL inventory? This will remove everything saved in this browser.");
-      if(!ok) return;
-      localStorage.removeItem(STORAGE_KEY);
-      localStorage.removeItem(STORAGE_KEY + "_lastSaved");
-      updateLastSaved();
-      renderInventory();
-    });
+    clearAllItemsBtn.addEventListener("click", clearAllItems);
 
+    // Initial load
     updateLastSaved();
     renderInventory();
+    renderChart();
   </script>
 </body>
 </html>
