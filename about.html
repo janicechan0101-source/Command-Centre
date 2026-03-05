@@ -1,0 +1,292 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Developer Profile</title>
+
+  <style>
+    :root{
+      /* Palette: pink / white / grey only (matches dashboard) */
+      --bg: #fff7f9;
+      --card: #ffffff;
+      --pink: #f3a7b6;
+      --pink-2:#ffd6de;
+      --pink-3:#ffe9ee;
+      --grey-1:#2f2f2f;
+      --grey-2:#6f6f6f;
+      --grey-3:#b9b9b9;
+      --border:#f2c6cf;
+      --shadow: 0 10px 25px rgba(0,0,0,0.06);
+      --radius: 16px;
+      --max: 980px;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    }
+
+    body{
+      margin:0;
+      background:
+        radial-gradient(1200px 600px at 10% 10%, var(--pink-2), transparent 55%),
+        radial-gradient(900px 500px at 90% 0%, var(--pink-3), transparent 50%),
+        var(--bg);
+      color: var(--grey-1);
+    }
+
+    /* Menu bar (consistent with index.html) */
+    .nav{
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      background: rgba(255, 247, 249, 0.92);
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-inner{
+      max-width: var(--max);
+      margin: 0 auto;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding: 14px 16px;
+      gap: 12px;
+    }
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      font-weight: 700;
+      letter-spacing: .2px;
+    }
+    .dot{
+      width: 12px;
+      height: 12px;
+      border-radius: 999px;
+      background: var(--pink);
+      box-shadow: 0 0 0 6px rgba(243,167,182,0.25);
+    }
+    .menu{
+      display:flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .menu a{
+      text-decoration:none;
+      color: var(--grey-1);
+      padding: 8px 12px;
+      border-radius: 999px;
+      border: 1px solid transparent;
+    }
+    .menu a:hover{
+      border-color: var(--border);
+      background: #fff;
+    }
+    .menu a.active{
+      background: var(--pink);
+      color: white;
+      border-color: var(--pink);
+    }
+
+    main{
+      max-width: var(--max);
+      margin: 22px auto 60px;
+      padding: 0 16px;
+    }
+
+    .header{
+      margin: 18px 0 18px;
+    }
+    h1{
+      margin:0;
+      font-size: 28px;
+    }
+    .subtitle{
+      margin: 6px 0 0;
+      color: var(--grey-2);
+      font-size: 14px;
+      max-width: 720px;
+      line-height: 1.5;
+    }
+
+    .card{
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 18px;
+    }
+
+    .profile{
+      display:grid;
+      grid-template-columns: 150px 1fr;
+      gap: 16px;
+      align-items:start;
+    }
+    @media (max-width: 720px){
+      .profile{ grid-template-columns: 1fr; }
+    }
+
+    .avatar{
+      width: 150px;
+      height: 150px;
+      border-radius: 22px;
+      border: 1px solid var(--border);
+      background: linear-gradient(135deg, var(--pink-3), #ffffff);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-weight: 800;
+      color: #b85a70;
+      letter-spacing: 1px;
+      box-shadow: var(--shadow);
+      user-select:none;
+    }
+
+    .section-title{
+      margin: 0 0 8px;
+      font-size: 16px;
+    }
+
+    .bio{
+      margin: 0;
+      color: var(--grey-1);
+      line-height: 1.6;
+      font-size: 14px;
+    }
+
+    .chips{
+      display:flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 12px;
+    }
+    .chip{
+      font-size: 12px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: #fff;
+      color: var(--grey-2);
+    }
+
+    .contact{
+      margin-top: 14px;
+      display:grid;
+      gap: 8px;
+    }
+
+    .contact-row{
+      display:flex;
+      gap: 10px;
+      align-items:center;
+      flex-wrap: wrap;
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: #fff;
+    }
+
+    .label{
+      font-size: 12px;
+      color: var(--grey-2);
+      min-width: 76px;
+    }
+    .value{
+      font-size: 14px;
+      color: var(--grey-1);
+      font-variant-numeric: tabular-nums;
+    }
+
+    a{
+      color: #b85a70;
+      text-decoration: none;
+    }
+    a:hover{
+      text-decoration: underline;
+    }
+
+    footer{
+      max-width: var(--max);
+      margin: 0 auto;
+      padding: 0 16px 30px;
+      color: var(--grey-2);
+      font-size: 12px;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Navigation bar (must appear on BOTH pages) -->
+  <nav class="nav">
+    <div class="nav-inner">
+      <div class="brand"><span class="dot"></span> Sarah’s Command Center</div>
+      <div class="menu">
+        <a href="index.html">Dashboard</a>
+        <a class="active" href="about.html">Developer Profile</a>
+      </div>
+    </div>
+  </nav>
+
+  <main>
+    <div class="header">
+      <h1>Developer Profile</h1>
+      <p class="subtitle">
+        A short introduction and contact details for ongoing support, enhancements, and future dashboard work.
+      </p>
+    </div>
+
+    <div class="card">
+      <div class="profile">
+        <div class="avatar">JC</div>
+
+        <div>
+          <h2 class="section-title" style="margin-top:0;">Janice Chan</h2>
+          <p class="bio">
+            I’m Janice Chan, a Vancouver-based software developer and web designer. I studied at Simon Fraser University
+            and specialize in building clean, reliable web experiences—especially dashboards and business websites that
+            are easy to use and maintain. Over the past five years, I’ve designed and delivered multiple projects for
+            small businesses, helping them present their services professionally and streamline day-to-day operations
+            through simple, effective tools.
+          </p>
+
+          <div class="chips" aria-label="Skills">
+            <span class="chip">HTML</span>
+            <span class="chip">CSS</span>
+            <span class="chip">JavaScript</span>
+            <span class="chip">UI/UX</span>
+            <span class="chip">Dashboards</span>
+            <span class="chip">Chart.js</span>
+          </div>
+
+          <div class="contact" aria-label="Contact information">
+            <div class="contact-row">
+              <div class="label">Phone</div>
+              <div class="value">(604) 555-0198</div>
+            </div>
+            <div class="contact-row">
+              <div class="label">Email</div>
+              <div class="value">
+                <a href="mailto:janice.chan.dev@example.com">janice.chan.dev@example.com</a>
+              </div>
+            </div>
+            <div class="contact-row">
+              <div class="label">Instagram</div>
+              <div class="value">
+                <a href="https://instagram.com/janicechan.web" target="_blank" rel="noopener">@janicechan.web</a>
+              </div>
+            </div>
+          </div>
+
+          <p class="subtitle" style="margin-top:14px;">
+            If you’d like enhancements (search, categories, exports, user roles, or additional analytics), I can implement them
+            and keep the Command Center evolving as your warehouse grows.
+          </p>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    Blush theme • Consistent navigation • Built for easy future expansion
+  </footer>
+</body>
+</html>
